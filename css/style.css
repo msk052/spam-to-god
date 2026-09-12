@@ -34,3 +34,21 @@ body{background:#dce9e9}.office{filter:saturate(.65);opacity:.42}.desktop{max-wi
 .markdown-fold h3{padding:13px 16px 15px}
 .is-training .markdown-fold{margin-top:10px}
 .is-training .prayer-pane .summary.markdown-fold{display:block}
+
+.day-late .office{filter:saturate(.45) brightness(.92);opacity:.36}
+.day-late .game-window{box-shadow:0 12px 45px #26394635}
+.day-late .analysis{background:#e7ecec}
+.day-late .seraph-heading span{color:#7f6b64}
+.day-final .office{background-image:linear-gradient(#eef3f188,#eef3f166),url('../assets/images/office_day5_empty.png'),url('../assets/images/sky_gray.png')}
+.day-final .metrics{opacity:.35}
+.day-final .analysis{background:#edf0ef;color:#3e4e56}
+.reply-button{min-width:110px;border:0;background:#fffdf7cc;box-shadow:none;color:#44616b;text-decoration:underline;text-underline-offset:5px}
+.reply-button:hover{background:#fffef9;transform:none}
+.ending-screen{display:flex;justify-content:center;align-items:center;min-height:720px}
+.ending-window{max-width:860px;width:100%;background:#fffdf7f7}
+.ending-body{padding:46px 58px;text-align:center}
+.ending-body h2{font-size:34px;margin:8px 0 28px}
+.ending-lines{display:grid;gap:12px;margin:28px auto;max-width:620px;text-align:left}
+.ending-lines p{margin:0;padding:13px 16px;border-left:3px solid #b9a56f;background:#f2f4ee;font-size:16px;line-height:1.8}
+#ending-result{margin:28px auto 12px;max-width:620px;font-size:18px;line-height:1.9;color:#455e68}
+.ending-body button{margin-top:24px}

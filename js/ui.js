@@ -4,11 +4,11 @@
   const buttons = () => document.querySelectorAll('[data-category]');
   function metrics(state) {
     const percent = count => state.processedCount ? `${Math.round(count / state.processedCount * 100)}%` : '—';
-    return [ `${state.processedCount} / 8`, percent(state.correctCount), percent(state.compliantCount), `${state.score}` ];
+    return [ `${state.processedCount} / ${state.dayPrayers.length}`, percent(state.correctCount), percent(state.compliantCount), `${state.score}` ];
   }
   function queue(state) {
     el('queue').replaceChildren();
-    SpamToGod.data.prayers.forEach((prayer, index) => {
+    state.dayPrayers.forEach((prayer, index) => {
       const row = document.createElement('li');
       const done = index < state.processedCount;
       const current = index === state.currentPrayerIndex && !done;
@@ -24,17 +24,41 @@
     screen(id) { document.querySelectorAll('.screen').forEach(screen => { screen.hidden = screen.id !== id; }); },
     kpi(state) { ['processed', 'accuracy', 'compliance', 'score'].forEach((id, i) => text(id, metrics(state)[i])); queue(state); },
     prayer(prayer, state) {
+      const data = SpamToGod.data;
+      const recommendation = data.recommendationKey(prayer);
+      const urgency = data.urgencyOf(prayer);
       text('prayer-id', `PRAYER / ${prayer.id}`); text('sender', prayer.sender); text('region', prayer.region);
-      text('summary', prayer.summary); text('original', prayer.originalText); text('human-status', prayer.status);
-      text('urgency', `${prayer.urgency}%`); el('urgency-meter').value = prayer.urgency;
-      text('repeat', `${prayer.repeatCount}회`); text('recommendation', SpamToGod.data.categories[prayer.systemCategory].label);
-      text('prayer-number', `${String(state.currentPrayerIndex + 1).padStart(2, '0')} / 08`);
+      text('summary', data.summaryOf(prayer)); text('original', data.originalOf(prayer)); text('human-status', prayer.status);
+      text('urgency', `${urgency}%`); el('urgency-meter').value = urgency;
+      text('repeat', `${prayer.repeatCount}회`); text('recommendation', recommendation ? data.categories[recommendation].label : '—');
+      text('prayer-number', `${String(state.currentPrayerIndex + 1).padStart(2, '0')} / ${String(state.dayPrayers.length).padStart(2, '0')}`);
       text('mail-status', '○ 읽음'); text('feedback', '원문을 읽고 필요한 경우 SERAPH 요약을 펼쳐 확인해 주세요.');
       el('feedback').className = ''; el('original').hidden = false;
       el('summary-panel').open = false;
       el('stamp').hidden = true; el('next-prayer').hidden = true;
       el('prayer-card').classList.remove('filed');
-      buttons().forEach(button => { button.disabled = button.dataset.category === 'miracle'; });
+      document.body.classList.toggle('day-late', state.day >= 4);
+      document.body.classList.toggle('day-final', state.day === 5);
+      buttons().forEach(button => {
+        const isMiracle = button.dataset.category === 'miracle';
+        button.disabled = isMiracle && (state.day < 2 || !prayer.miracleEligible || state.miraclePoints <= 0);
+        if (isMiracle) button.querySelector('small').textContent = state.day < 2 ? 'DAY 02부터 사용 가능' : `남은 별빛 ${state.miraclePoints}`;
+      });
+      if (prayer.flags?.revealReplyButton) {
+        let reply = document.getElementById('reply-button');
+        if (!reply) {
+          reply = document.createElement('button');
+          reply.id = 'reply-button';
+          reply.className = 'reply-button';
+          reply.textContent = '답장하기';
+          document.querySelector('.action-bar').append(reply);
+          reply.addEventListener('click', () => SpamToGod.game.reply());
+        }
+        reply.hidden = false;
+      } else {
+        const reply = document.getElementById('reply-button');
+        if (reply) reply.hidden = true;
+      }
       el('mail-icon').classList.remove('arriving'); void el('mail-icon').offsetWidth; el('mail-icon').classList.add('arriving');
       el('sender').focus(); this.kpi(state);
     },
@@ -44,15 +68,32 @@
       const category = SpamToGod.data.categories[chosen];
       el('stamp-image').src = category.image; el('stamp-image').alt = category.stamp;
       text('stamp-label', `${category.label} · 접수 완료`); el('stamp').hidden = false;
-      const expected = SpamToGod.data.categories[prayer.correctCategory];
-      text('feedback', `${correct ? '규정 일치 · +100' : '규정과 일치하지 않음 · −50'} — ${expected.label}: ${expected.rule}`);
-      el('feedback').className = correct ? 'match' : 'mismatch'; text('mail-status', '✓ 처리 완료');
+      const expectedKey = SpamToGod.data.policyKey(prayer);
+      const expected = expectedKey ? SpamToGod.data.categories[expectedKey] : null;
+      if (!expected) text('feedback', prayer.errorEvent?.message || '정책 판정 테이블이 응답하지 않습니다. 기록만 남깁니다.');
+      else text('feedback', `${correct ? '규정 일치 · +100' : '규정과 일치하지 않음 · −50'} — ${expected.label}: ${expected.rule}`);
+      el('feedback').className = !expected || correct ? 'match' : 'mismatch'; text('mail-status', '✓ 처리 완료');
     },
-    resolved(state) { this.kpi(state); el('prayer-card').classList.add('filed'); el('next-prayer').hidden = false; text('next-prayer', state.processedCount === 8 ? 'DAY 1 근무 평가 보기 →' : '다음 기도 →'); el('next-prayer').focus(); },
+    resolved(state) { this.kpi(state); el('prayer-card').classList.add('filed'); el('next-prayer').hidden = false; text('next-prayer', state.processedCount === state.dayPrayers.length ? (state.day === 5 ? '최종 보고 보기 →' : `DAY ${state.day} 근무 평가 보기 →`) : '다음 기도 →'); el('next-prayer').focus(); },
     result(state) {
       this.screen('result'); el('result-metrics').replaceChildren();
       ['처리량', '정확도', '규정 준수율', '업무 점수'].forEach((label, index) => { const item = document.createElement('div'); const value = document.createElement('strong'); item.textContent = label; value.textContent = metrics(state)[index]; item.append(value); el('result-metrics').append(item); });
-      text('result-message', SpamToGod.story.result(state.correctCount)); el('result-title').focus();
+      text('result-day', `DAY ${String(state.day).padStart(2, '0')} / COMPLETE`);
+      text('result-title', state.day === 5 ? '마지막 근무를 마쳤습니다.' : `DAY ${state.day} 근무를 마쳤습니다.`);
+      text('result-copy', state.day === 5 ? '이제 기록이 아니라 선택만 남았습니다.' : `${state.dayPrayers.length}통의 기도를 처리했습니다.`);
+      text('result-message', SpamToGod.story.result(state));
+      text('result-help', state.day >= 4 ? '후반부에는 정답이 사라지는 기도가 등장합니다. 점수보다 기록과 선택이 중요해집니다.' : '정확도: 정답 분류 비율 · 규정 준수율: SERAPH 추천 일치 비율');
+      text('restart', state.day === 5 ? '엔딩 보기 →' : `DAY ${state.day + 1} 출근하기 →`);
+      text('result-note', state.day === 5 ? '마지막 선택에 따라 엔딩이 달라집니다.' : `다음 근무: DAY ${state.day + 1}`);
+      el('result-title').focus();
+    },
+    ending(ending) {
+      this.screen('ending');
+      text('ending-bar', ending.id);
+      text('ending-title', ending.title);
+      el('ending-lines').replaceChildren(...ending.lines.map(line => { const p = document.createElement('p'); p.textContent = line; return p; }));
+      text('ending-result', ending.result);
+      el('ending-title').focus();
     }
   };
 })();

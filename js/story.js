@@ -70,8 +70,9 @@
       document.body.classList.add('is-training');
       $('tutorial-coach').hidden = false; $('tutorial-skip').hidden = false;
       $('mode-label').textContent = '교육 모드'; $('work-mode').textContent = '신규 사원 온보딩';
-      const sample = { ...app.data.prayers[0], id:'TRAINING-001', sender:'인간 #4821', summary:'발표를 앞둔 직장인의 응원 요청.' };
-      app.ui.prayer(sample, { phase:'reading', currentPrayerIndex:0, processedCount:0, correctCount:0, compliantCount:0, score:0 });
+      $('work-day').textContent = 'DAY 01';
+      const sample = { ...app.data.prayers[0], id:'TRAINING-001', sender:'HUMAN #4821', seraph: { ...app.data.prayers[0].seraph, summary:'발표를 앞둔 직장인의 응원 요청.' } };
+      app.ui.prayer(sample, { day:1, phase:'reading', dayPrayers:app.data.prayers, currentPrayerIndex:0, processedCount:0, correctCount:0, compliantCount:0, score:0, miraclePoints:3 });
       $('prayer-number').textContent = '교육용 샘플 / 01';
       $('queue').innerHTML = '<li class="current">○ 교육용 기도 #001</li><li class="waiting">● 실제 기도 · 업무 시작 후</li>';
       $('feedback').textContent = '교육용 샘플입니다. 실제 업무 기록에는 반영되지 않습니다.';
@@ -100,6 +101,12 @@
     },
     skip() { if (!active) return; this.begin(); },
     begin() { leave(); $('mode-label').textContent='업무 모드'; $('work-mode').textContent='첫 출근'; app.game.begin(); },
-    result(correct) { return correct === 8 ? '여덟 통 모두 규정에 맞게 접수했네요! 오늘의 기도는 모두 담당 부서로 전달됐어요. 이제 따뜻한 차 한 잔 하러 갈까요?' : '첫 근무 수고했어요! 분류가 헷갈리면 오른쪽 규정표를 다시 읽어 보세요. 오늘의 실수도 내일의 업무 안내서가 될 거예요.'; }
+    result(state) {
+      if (state.day === 1) return state.correctCount === state.dayPrayers.length ? '첫 근무 훌륭했어요. 내일부터는 기적 포인트도 열려요. 별빛은 세 개뿐이니까, 누구에게 닿게 할지 직접 골라야 해요.' : '첫 근무 수고했어요. 내일부터는 속도가 빨라지고, 가끔 정답보다 선택이 먼저 오는 순간도 있을 거예요.';
+      if (state.day === 2) return '월요일 폭주는 지나갔지만 받은편지함은 조용해질 생각이 없어 보여요. 기적 포인트를 아꼈든 썼든, 기록은 계속 따라옵니다.';
+      if (state.day === 3) return 'SERAPH의 숫자가 잠깐씩 어긋났죠. 인간 #0317 기록은 제가 보기에도 이상해요. 내일은 SYSTEM 폴더를… 못 본 척하기 어려울 거예요.';
+      if (state.day === 4) return '가브리엘이 말한 건 정답이라기보다 명령에 가까웠어요. 그래도 마지막 출근은 옵니다. 아주 조용한 하루가요.';
+      return '미카의 메시지는 더 오지 않습니다. 마지막 기록을 열람하세요.';
+    }
   };
 })();

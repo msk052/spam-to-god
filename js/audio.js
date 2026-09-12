@@ -11,6 +11,7 @@
   const play = audio => { const promise = audio.play(); if (promise) promise.catch(() => {}); };
   SpamToGod.audio = {
     start() { started = true; if (!muted && !document.hidden) play(bgm); },
+    stop() { bgm.pause(); bgm.currentTime = 0; Object.values(effects).forEach(sound => sound.pause()); },
     effect(key) { if (muted || document.hidden || !effects[key]) return; const sound = effects[key]; sound.currentTime = 0; sound.volume = key === 'stamp' ? 0.35 : 0.25; play(sound); },
     toggle() { muted = !muted; bgm.muted = muted; Object.values(effects).forEach(sound => { sound.muted = muted; if (muted) sound.pause(); }); if (!muted && started) play(bgm); return muted; }
   };
