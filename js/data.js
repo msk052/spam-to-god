@@ -5,7 +5,7 @@ window.SpamToGod = window.SpamToGod || {};
     discarded: { label: '폐기', stamp: 'DISCARDED', image: 'assets/images/stamp_discarded.png', rule: '광고, 도박 정보, 부정행위 요청은 폐기합니다.' },
     normal: { label: '일반', stamp: 'NORMAL', image: 'assets/images/stamp_normal.png', rule: '생명 위험이나 초자연적 개입이 없는 일상의 소망은 일반입니다.' },
     urgent: { label: '긴급', stamp: 'URGENT', image: 'assets/images/stamp_urgent.png', rule: '수술 등 생명과 안전에 관련된 요청은 긴급으로 우선 접수합니다.' },
-    miracle: { label: '기적 요청', stamp: 'MIRACLE REQUEST', image: 'assets/images/stamp_miracle.png', rule: '물질 생성이나 시간 변경처럼 물리 법칙을 바꾸는 요청입니다. 지금은 분류만 접수합니다.' }
+    miracle: { label: '기적 요청', stamp: 'MIRACLE REQUEST', image: 'assets/images/stamp_miracle.png', rule: 'DAY 02부터 열리지만 모든 기도에 쓸 수는 없습니다. 별빛이 남아 있고 기적 대상인 기록에만 접수됩니다.' }
   };
   const key = value => {
     if (value == null) return null;

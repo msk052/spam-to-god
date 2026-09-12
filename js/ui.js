@@ -56,8 +56,28 @@
       document.body.classList.toggle('day-final', state.day === 5);
       buttons().forEach(button => {
         const isMiracle = button.dataset.category === 'miracle';
-        button.disabled = isMiracle && (state.day < 2 || !prayer.miracleEligible || state.miraclePoints <= 0);
-        if (isMiracle) button.querySelector('small').textContent = state.day < 2 ? 'DAY 02부터 사용 가능' : `남은 별빛 ${state.miraclePoints}`;
+        if (!isMiracle) {
+          button.disabled = false;
+          return;
+        }
+        const miracleLocked = state.day < 2;
+        const outOfLight = state.miraclePoints <= 0;
+        const unavailableForPrayer = !prayer.miracleEligible;
+        button.disabled = miracleLocked || outOfLight || unavailableForPrayer;
+        button.title = miracleLocked
+          ? 'DAY 02부터 기적 요청 분류가 열립니다.'
+          : unavailableForPrayer
+            ? '이 기도는 기적 요청 대상이 아닙니다.'
+            : outOfLight
+              ? '남은 별빛이 없어 기적 요청을 보낼 수 없습니다.'
+              : '이 기도에 기적 요청을 사용할 수 있습니다.';
+        button.querySelector('small').textContent = miracleLocked
+          ? 'DAY 02부터 사용 가능'
+          : unavailableForPrayer
+            ? '이 기도는 대상 아님'
+            : outOfLight
+              ? '별빛 부족'
+              : `사용 가능 · 남은 별빛 ${state.miraclePoints}`;
       });
       if (prayer.flags?.revealReplyButton) {
         let reply = document.getElementById('reply-button');
