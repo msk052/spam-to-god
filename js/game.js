@@ -36,6 +36,7 @@
     document.getElementById('work-mode').textContent = day === 5 ? '마지막 기도' : day === 4 ? '시스템 조사' : day === 3 ? '분류 오류' : day === 2 ? '업무 폭주' : '첫 출근';
     document.getElementById('mode-label').textContent = day === 5 ? '최종 근무' : '업무 모드';
     document.querySelector('.rules summary').textContent = `분류 규정 · DAY ${day}`;
+    if (app.audio.day) app.audio.day(day);
   }
 
   function openPrayer() {
@@ -43,6 +44,10 @@
     const prayer = state.dayPrayers[state.currentPrayerIndex];
     app.ui.prayer(prayer, state);
     app.audio.effect('mail');
+    if (state.day >= 3) app.audio.effect('tick');
+    if (prayer.errorEvent || prayer.flags?.systemGlitch || prayer.flags?.unlockSystemFolder || prayer.flags?.discoveredTruth) app.audio.effect('noise');
+    if (prayer.flags?.lowerBgm && app.audio.lowerBgm) app.audio.lowerBgm(true);
+    else if (app.audio.lowerBgm) app.audio.lowerBgm(state.day >= 5);
     if (prayer.flags?.stopBgm && app.audio.stop) app.audio.stop();
   }
 
@@ -57,6 +62,7 @@
 
   function showEnding(id) {
     state.phase = 'ending';
+    if (app.audio.ending) app.audio.ending();
     app.ui.ending(endingById(id));
   }
 
@@ -78,10 +84,11 @@
     }
     state.records.push({ id: prayer.id, day: state.day, category, correct });
     app.ui.resolve(prayer, category, correct);
-    app.audio.effect(category === 'miracle' ? 'correct' : 'stamp');
+    app.audio.effect(category === 'miracle' ? 'noise' : 'stamp');
     resolutionTimer = setTimeout(() => {
       state.phase = 'resolved';
       if (!prayer.flags?.suppressSuccessSound) app.audio.effect(correct ? 'correct' : 'wrong');
+      if (category === 'miracle') app.audio.effect('correct');
       app.ui.resolved(state);
     }, 650);
   }

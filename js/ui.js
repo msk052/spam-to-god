@@ -2,6 +2,34 @@
   const el = id => document.getElementById(id);
   const text = (id, value) => { el(id).textContent = value; };
   const buttons = () => document.querySelectorAll('[data-category]');
+  function fxLayer() {
+    let layer = document.getElementById('fx-layer');
+    if (!layer) {
+      layer = document.createElement('div');
+      layer.id = 'fx-layer';
+      layer.setAttribute('aria-hidden', 'true');
+      layer.innerHTML = '<div class="crt-static"></div><div class="glitch-card"><img src="assets/images/system_glitch.png" alt=""><span>SYSTEM INTERRUPT</span></div><div class="miracle-particles"></div>';
+      document.body.append(layer);
+    }
+    return layer;
+  }
+  function pulseBody(className, duration = 900) {
+    document.body.classList.remove(className);
+    void document.body.offsetWidth;
+    document.body.classList.add(className);
+    window.setTimeout(() => document.body.classList.remove(className), duration);
+  }
+  function visualState(prayer, state) {
+    fxLayer();
+    const glitched = Boolean(prayer.errorEvent || prayer.flags?.systemGlitch || prayer.flags?.unlockSystemFolder || prayer.flags?.discoveredTruth);
+    document.body.classList.toggle('has-glitch', glitched);
+    document.body.classList.toggle('has-miracle-target', Boolean(state.day >= 2 && prayer.miracleEligible && state.miraclePoints > 0));
+    document.body.classList.toggle('is-0317', Boolean(prayer.flags?.recurring0317));
+    const seraphImg = document.querySelector('.seraph-heading img');
+    if (seraphImg) seraphImg.src = glitched ? 'assets/images/seraph_corrupted.png' : 'assets/images/seraph_symbol.png';
+    const systemFolder = document.querySelector('.system-folder img');
+    if (systemFolder) systemFolder.src = prayer.flags?.unlockSystemFolder || prayer.flags?.discoveredTruth ? 'assets/images/folder_corrupted.png' : 'assets/images/folder_system.png';
+  }
   function hideCharacterNote() {
     const note = el('tutorial-coach');
     if (!document.body.classList.contains('is-training')) note.hidden = true;
@@ -54,6 +82,7 @@
       el('prayer-card').classList.remove('filed');
       document.body.classList.toggle('day-late', state.day >= 4);
       document.body.classList.toggle('day-final', state.day === 5);
+      visualState(prayer, state);
       buttons().forEach(button => {
         const isMiracle = button.dataset.category === 'miracle';
         if (!isMiracle) {
@@ -104,6 +133,8 @@
       const category = SpamToGod.data.categories[chosen];
       el('stamp-image').src = category.image; el('stamp-image').alt = category.stamp;
       text('stamp-label', `${category.label} · 접수 완료`); el('stamp').hidden = false;
+      if (chosen === 'miracle') pulseBody('miracle-flash', 1400);
+      if (prayer.errorEvent || prayer.flags?.systemGlitch || prayer.flags?.unlockSystemFolder || prayer.flags?.discoveredTruth) pulseBody('glitch-flash', 850);
       const expectedKey = SpamToGod.data.policyKey(prayer);
       const expected = expectedKey ? SpamToGod.data.categories[expectedKey] : null;
       if (!expected) text('feedback', prayer.errorEvent?.message || '정책 판정 테이블이 응답하지 않습니다. 기록만 남깁니다.');
@@ -126,6 +157,8 @@
       el('result-title').focus();
     },
     ending(ending) {
+      fxLayer();
+      document.body.classList.remove('has-glitch', 'has-miracle-target', 'is-0317');
       this.screen('ending');
       text('ending-bar', ending.id);
       text('ending-title', ending.title);
