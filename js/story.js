@@ -51,6 +51,7 @@
     });
     document.querySelectorAll('[data-category]').forEach(el => el.disabled = current.phase !== 2 || practiced || el.dataset.category === 'miracle');
     $('tutorial-mika').src = `assets/images/characters/mika/mika_${current.portrait}.png`;
+    $('tutorial-mika').alt = '교육 담당 미카';
     typeDialogue(current.text);
     $('tutorial-title').focus({preventScroll:true});
   }

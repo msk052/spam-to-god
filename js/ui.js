@@ -2,6 +2,21 @@
   const el = id => document.getElementById(id);
   const text = (id, value) => { el(id).textContent = value; };
   const buttons = () => document.querySelectorAll('[data-category]');
+  function hideCharacterNote() {
+    const note = el('tutorial-coach');
+    if (!document.body.classList.contains('is-training')) note.hidden = true;
+    note.classList.remove('gabriel-note');
+  }
+  function gabrielNote(prayer) {
+    const note = el('tutorial-coach');
+    el('tutorial-mika').src = 'assets/images/characters/gabriel/gabriel_default.png';
+    el('tutorial-mika').alt = '관리자 가브리엘';
+    el('tutorial-title').textContent = '가브리엘 · 제7분류과 관리자';
+    el('tutorial-text').textContent = prayer.originalText.join('\n\n');
+    el('tutorial-next').disabled = true;
+    note.classList.add('gabriel-note', 'dialogue-ready');
+    note.hidden = false;
+  }
   function metrics(state) {
     const percent = count => state.processedCount ? `${Math.round(count / state.processedCount * 100)}%` : '—';
     return [ `${state.processedCount} / ${state.dayPrayers.length}`, percent(state.correctCount), percent(state.compliantCount), `${state.score}` ];
@@ -59,6 +74,7 @@
         const reply = document.getElementById('reply-button');
         if (reply) reply.hidden = true;
       }
+      if (prayer.flags?.gabrielAppears) gabrielNote(prayer); else hideCharacterNote();
       el('mail-icon').classList.remove('arriving'); void el('mail-icon').offsetWidth; el('mail-icon').classList.add('arriving');
       el('sender').focus(); this.kpi(state);
     },
@@ -82,6 +98,8 @@
       text('result-title', state.day === 5 ? '마지막 근무를 마쳤습니다.' : `DAY ${state.day} 근무를 마쳤습니다.`);
       text('result-copy', state.day === 5 ? '이제 기록이 아니라 선택만 남았습니다.' : `${state.dayPrayers.length}통의 기도를 처리했습니다.`);
       text('result-message', SpamToGod.story.result(state));
+      el('result-portrait').src = state.day >= 4 ? 'assets/images/characters/gabriel/gabriel_suspicious.png' : 'assets/images/characters/mika/mika_smile.png';
+      text('result-speaker', state.day >= 4 ? '가브리엘 · 제7분류과 관리자' : '미카 · 교육 담당');
       text('result-help', state.day >= 4 ? '후반부에는 정답이 사라지는 기도가 등장합니다. 점수보다 기록과 선택이 중요해집니다.' : '정확도: 정답 분류 비율 · 규정 준수율: SERAPH 추천 일치 비율');
       text('restart', state.day === 5 ? '엔딩 보기 →' : `DAY ${state.day + 1} 출근하기 →`);
       text('result-note', state.day === 5 ? '마지막 선택에 따라 엔딩이 달라집니다.' : `다음 근무: DAY ${state.day + 1}`);
@@ -91,6 +109,7 @@
       this.screen('ending');
       text('ending-bar', ending.id);
       text('ending-title', ending.title);
+      el('ending-portrait').src = `assets/images/characters/gabriel/${ending.portrait || 'gabriel_default'}.png`;
       el('ending-lines').replaceChildren(...ending.lines.map(line => { const p = document.createElement('p'); p.textContent = line; return p; }));
       text('ending-result', ending.result);
       el('ending-title').focus();

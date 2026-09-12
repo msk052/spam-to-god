@@ -52,3 +52,16 @@ body{background:#dce9e9}.office{filter:saturate(.65);opacity:.42}.desktop{max-wi
 .ending-lines p{margin:0;padding:13px 16px;border-left:3px solid #b9a56f;background:#f2f4ee;font-size:16px;line-height:1.8}
 #ending-result{margin:28px auto 12px;max-width:620px;font-size:18px;line-height:1.9;color:#455e68}
 .ending-body button{margin-top:24px}
+
+.gabriel-note #tutorial-mika{left:clamp(-135px,-5vw,-70px);width:clamp(280px,19vw,360px);height:clamp(330px,26vw,430px);filter:drop-shadow(0 10px 14px #25333f45)}
+.gabriel-note .coach-window{border-color:#7f8d95;background:#f7f8f3}
+.gabriel-note .coach-window .window-bar{background:linear-gradient(#e5e8e6,#cfd8d9)}
+.gabriel-note .training-progress{display:none}
+.gabriel-note .dialogue-advance{display:none}
+.gabriel-note .coach-body>p{white-space:pre-wrap;color:#2f4652}
+.ending-body{text-align:left;position:relative}
+#ending-portrait{float:left;width:185px;height:245px;object-fit:contain;object-position:top;margin:0 30px 16px 0;filter:drop-shadow(0 9px 12px #26394636)}
+.ending-body h2{font-size:34px;margin:8px 0 20px;text-align:left}
+.ending-lines{display:block;margin:22px 0;max-width:none;text-align:left}
+.ending-lines p{margin:0 0 15px;padding:0;border:0;background:transparent;font-size:17px;line-height:1.95;word-break:keep-all}
+#ending-result{clear:both;margin:24px 0 12px;max-width:none;font-size:19px}

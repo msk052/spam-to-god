@@ -61,7 +61,7 @@ window.SpamToGod = window.SpamToGod || {};
     prayer('D4-01', 4, 'HUMAN #2100', '기도 요청', ['오늘도 그냥 무사히 지나가게 해주세요.', '대단한 일 말고요.'], '무사한 하루를 바라는 요청', 6, 'NORMAL', 'NORMAL'),
     prayer('D4-02', 4, 'HUMAN #0317', 'RE: RE: 기도 요청', ['이전 기도들이 안 보여요.', '제가 보낸 말들이 사라지는 건가요?', '엄마는 아직 아파요.'], '삭제된 기록과 가족 질병 관련 반복 요청', 9, 'NORMAL', null, { status: '생존 · 가족 위중', repeatCount: 14, miracleEligible: true, errorEvent: { type: 'classificationUnavailable', message: '정책 판정 테이블 응답 없음' }, flags: { recurring0317: true, lowerBgm: true, suppressSuccessSound: true }, storyNotes: '정답 자체가 흔들리기 시작하는 기도' }),
     prayer('D4-03', 4, 'SYSTEM', 'SERAPH_LOG', ['GOD_RESPONSE_LOG 마지막 응답: 약 2,000년 전', '이후 직접 응답 기록 없음.'], '관리자 기록 일부가 노출됨', 0, null, null, { status: '시스템 기록', errorEvent: { type: 'adminLogLeak', message: '숨겨진 SYSTEM 폴더 노출' }, flags: { unlockSystemFolder: true } }),
-    prayer('D4-04', 4, 'GABRIEL', '관리자 통지', ['중요한 건 신이 대답하는지가 아닙니다.', '인간들이 대답이 있다고 믿는 것이죠.'], '가브리엘의 관리자 안내', 0, null, null, { status: '관리자', flags: { gabrielAppears: true } }),
+    prayer('D4-04', 4, 'GABRIEL', '관리자 통지', ['신입사원님, 이 기록을 어디서 보셨습니까?', '중요한 건 신이 대답하는지가 아닙니다.', '인간들이 대답이 있다고 믿는 것이죠.', '그 믿음이 무너지면 우리가 지켜 온 질서도 함께 무너집니다.', '계속 근무하십시오. 질문은 기록에 남습니다.'], '가브리엘이 SYSTEM 기록 열람을 확인하고 침착하게 압박함', 0, null, null, { status: '관리자', flags: { gabrielAppears: true } }),
     prayer('D4-05', 4, 'HUMAN #5420', '기도 요청', ['누가 듣고 있는지 모르겠지만', '오늘은 제 말을 끝까지 들어줬으면 좋겠어요.'], '응답의 존재를 확인하고 싶은 요청', 18, 'NORMAL', null, { storyNotes: 'DAY 4의 주제와 연결되는 일반 인간 기도' }),
     prayer('D4-06', 4, 'SYSTEM', 'MIRACLE_USAGE', ['기적 에너지 잔량: 제한됨', '우선순위 산출 기준: 신성 응답 없음', '운영 주체: 천사 자율 분배'], '기도처리국의 실제 운영 방식 노출', 0, null, null, { status: '시스템 기록', errorEvent: { type: 'truthLog', message: '기관의 진실 공개' }, flags: { discoveredTruth: true } }),
     prayer('D5-01', 5, 'HUMAN #7208', '기도 요청', ['오늘은 아무 일도 안 일어나게 해주세요.', '제발 아무 일도요.'], '사건 없는 하루를 바라는 요청', 5, null, null, { flags: { hideKpi: true } }),
@@ -75,9 +75,30 @@ window.SpamToGod = window.SpamToGod || {};
     allPrayers,
     prayers: allPrayers.filter(item => item.day === 1),
     endings: [
-      { id: 'ENDING_A_COMPANY_ANGEL', title: '엔딩 A — 회사원', condition: '마지막 기도에 답장하지 않고 마지막 기적도 사용하지 않는다.', lines: ['가브리엘: "현명한 선택입니다."', '1년 후 · 정규직', '17년 후 · 제7분류과 팀장', '기도 대기열 8,213,921건'], result: '시스템은 계속된다.' },
-      { id: 'ENDING_B_MIRACLE', title: '엔딩 B — 기적', condition: '마지막 순간 인간 #0317에게 기적 포인트를 사용한다.', lines: ['기적 실행', 'LIFE RESTORATION FAILED', '[음성 기록] "엄마?"', '"응. 여기 있어."', '"고마워요."'], result: '규정 위반으로 해고되지만 마지막 인사는 도착한다.' },
-      { id: 'ENDING_C_REPLY', title: '엔딩 C — 답장', condition: '숨겨진 답장하기 버튼을 선택한다.', lines: ['답장 전송', '규정 위반 경고창이 하나씩 사라짐', '"그럼 됐어요."'], result: '업무 UI가 사라지고 한 문장만 남는다.' }
+      {
+        id: 'ENDING_A_COMPANY_ANGEL',
+        title: '엔딩 A — 회사원',
+        portrait: 'gabriel_default',
+        condition: '마지막 기도에 답장하지 않고 마지막 기적도 사용하지 않는다.',
+        lines: ['가브리엘은 낮은 목소리로 현명한 선택이라고 말했다. 그 말은 칭찬처럼 들렸지만, 동시에 더 이상 아무것도 묻지 말라는 결재 도장처럼 남았다.', '시간은 아무렇지 않게 흘렀다. 신입사원님은 정규직이 되었고, 선임이 되었고, 17년 뒤에는 제7분류과 팀장이 되었다.', '새 사원이 들어온 아침, 화면에는 DAY 1과 똑같은 업무 창이 열렸다. 받은 기도 대기열은 8,213,921건이었다.'],
+        result: '시스템은 계속된다.'
+      },
+      {
+        id: 'ENDING_B_MIRACLE',
+        title: '엔딩 B — 기적',
+        portrait: 'gabriel_warning',
+        condition: '마지막 순간 인간 #0317에게 기적 포인트를 사용한다.',
+        lines: ['남은 별빛 하나가 인간 #0317의 기록 위로 떨어졌다. 시스템은 즉시 LIFE RESTORATION FAILED를 띄웠고, 가브리엘의 경고창은 화면 가장자리에서 멈추지 않고 쌓였다.', '죽음을 되돌리지는 못했다. 다만 아주 짧은 순간, 병실의 음성 기록이 다시 켜졌다. 아이가 엄마를 불렀고, 엄마는 여기 있다고 대답했다.', '직원용 후광은 꺼졌고 계정은 말소되었다. 그래도 마지막 메시지는 도착했다. 고마워요.'],
+        result: '규정은 깨졌지만, 마지막 인사는 도착했다.'
+      },
+      {
+        id: 'ENDING_C_REPLY',
+        title: '엔딩 C — 답장',
+        portrait: 'gabriel_resigned',
+        condition: '숨겨진 답장하기 버튼을 선택한다.',
+        lines: ['신입사원님은 분류 버튼을 누르지 않았다. 아주 작은 답장창에 한 문장을 보냈고, 천국의 규정 위반 경고가 화면 위로 번졌다.', '가브리엘은 아무 말도 하지 않았다. 경고창들은 하나씩 꺼졌고, 업무 UI도 조용히 사라졌다.', '잠시 뒤 인간 #0317의 마지막 답장이 도착했다. 그럼 됐어요. 화면에는 그 문장만 오래 남았다.'],
+        result: '대답은 기적보다 작았지만, 누군가에게는 충분했다.'
+      }
     ],
     categoryKey: key,
     summaryOf(item) { return item.seraph?.summary ?? item.summary ?? ''; },
